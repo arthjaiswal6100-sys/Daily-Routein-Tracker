@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyProgress — ARTH</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">✦</div>
+        <div class="logo-text">
+            <h2>MyProgress</h2>
+            <span>PERSONAL DASHBOARD</span>
+        </div>
+    </div>
+
+    <nav>
+        <button class="nav-btn active" onclick="showSection('today', this)">
+            🏠 <span>Today</span>
+        </button>
+
+        <button class="nav-btn" onclick="showSection('week', this)">
+            📊 <span>This Week</span>
+        </button>
+
+        <button class="nav-btn" onclick="showSection('month', this)">
+            📅 <span>This Month</span>
+        </button>
+
+        <button class="nav-btn" onclick="showSection('history', this)">
+            🕘 <span>History</span>
+        </button>
+
+        <button class="nav-btn" onclick="showSection('overall', this)">
+            🏆 <span>Overall</span>
+        </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+
+        <button class="ai-btn" onclick="connectAI()">
+            ✨ Connect AI
+        </button>
+
+        <p>Your progress is yours.</p>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+        <div>
+            <p class="small-text" id="dateText"></p>
+
+            <h1 id="greeting">
+                Good Evening 👋
+            </h1>
+
+            <p class="subtitle">
+                Build your day. Build yourself.
+            </p>
+        </div>
+
+        <div class="top-actions">
+
+            <button
+                class="theme-btn"
+                id="themeToggle"
+                onclick="toggleTheme()"
+                title="Toggle theme"
+            >
+                🌙
+            </button>
+
+            <div class="profile">
+                <div class="profile-circle">ARTH</div>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- TODAY -->
+    <section id="today" class="section active-section">
+
+        <!-- DAY SWITCHER -->
+        <div class="day-control">
+
+            <button onclick="changeDay(-1)">
+                ←
+            </button>
+
+            <div class="selected-day">
+
+                <span id="dayNumber">
+                    DAY 1
+                </span>
+
+                <strong id="selectedDate">
+                    Today
+                </strong>
+
+            </div>
+
+            <button onclick="changeDay(1)">
+                →
+            </button>
+
+            <button
+                class="today-btn"
+                onclick="goToToday()"
+            >
+                Today
+            </button>
+
+        </div>
+
+
+        <!-- HERO -->
+        <div class="hero-card">
+
+            <div class="hero-content">
+
+                <div>
+
+                    <span class="eyebrow">
+                        DAILY PROGRESS
+                    </span>
+
+                    <h2 id="heroTitle">
+                        You're doing better<br>
+                        than you think.
+                    </h2>
+
+                    <p id="motivationText">
+                        Your journey starts with one small step.
+                    </p>
+
+                </div>
+
+                <div class="progress-ring">
+
+                    <svg width="200" height="200">
+
+                        <circle
+                            class="ring-bg"
+                            cx="100"
+                            cy="100"
+                            r="78"
+                        />
+
+                        <circle
+                            id="progressCircle"
+                            class="ring-progress"
+                            cx="100"
+                            cy="100"
+                            r="78"
+                        />
+
+                    </svg>
+
+                    <div class="ring-text">
+
+                        <strong id="todayPercent">
+                            0%
+                        </strong>
+
+                        <span>
+                            complete
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="progress-line">
+                <div id="todayBar"></div>
+            </div>
+
+        </div>
+
+
+        <!-- STATS -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">✓</div>
+
+                <div>
+                    <span>Completed</span>
+                    <strong id="completedCount">0</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">○</div>
+
+                <div>
+                    <span>Remaining</span>
+                    <strong id="remainingCount">0</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+
+                <div>
+                    <span>Current Streak</span>
+                    <strong id="streakCount">0 days</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+
+                <div>
+                    <span>vs Yesterday</span>
+                    <strong id="comparison">0%</strong>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- GOALS + CHART -->
+        <div class="content-grid">
+
+            <div class="tasks-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2 id="goalHeading">
+                            Today's Goals
+                        </h2>
+
+                        <p>
+                            Add, edit and organize your goals.
+                        </p>
+                    </div>
+
+                    <button
+                        class="add-btn"
+                        onclick="openTaskModal()"
+                    >
+                        ＋ Add Goal
+                    </button>
+
+                </div>
+
+
+                <div id="taskList" class="task-list"></div>
+
+
+                <div id="emptyState" class="empty-state">
+
+                    <div>🎯</div>
+
+                    <h3>
+                        No goals yet
+                    </h3>
+
+                    <p>
+                        Add your first goal for this day.
+                    </p>
+
+                    <button
+                        class="empty-add"
+                        onclick="openTaskModal()"
+                    >
+                        + Create Goal
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Today's Journey</h2>
+
+                        <p>
+                            Your progress for this day.
+                        </p>
+                    </div>
+
+                </div>
+
+                <canvas id="todayChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- DAY NOTES -->
+        <div class="notes-card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>How was your day? ✍️</h2>
+
+                    <p>
+                        Write a short note for your future self.
+                    </p>
+                </div>
+
+                <span id="saveStatus">
+                    Auto-saved
+                </span>
+
+            </div>
+
+            <textarea
+                id="dayNotes"
+                placeholder="Write something about your day..."
+                oninput="saveNotes()"
+            ></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- WEEK -->
+    <section id="week" class="section">
+
+        <div class="page-title">
+
+            <span>WEEKLY OVERVIEW</span>
+
+            <h1>
+                This Week 📊
+            </h1>
+
+            <p>
+                See how consistently you've been progressing.
+            </p>
+
+        </div>
+
+        <div class="big-stat-card">
+
+            <div>
+                <span>
+                    Weekly Completion
+                </span>
+
+                <strong id="weekPercent">
+                    0%
+                </strong>
+            </div>
+
+            <div class="big-progress">
+                <div id="weekBar"></div>
+            </div>
+
+        </div>
+
+        <div class="chart-card large-chart">
+            <canvas id="weekChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- MONTH -->
+    <section id="month" class="section">
+
+        <div class="page-title">
+
+            <span>MONTHLY OVERVIEW</span>
+
+            <h1>
+                This Month 📅
+            </h1>
+
+            <p>
+                One month. Many small wins.
+            </p>
+
+        </div>
+
+        <div class="big-stat-card">
+
+            <div>
+                <span>
+                    Monthly Completion
+                </span>
+
+                <strong id="monthPercent">
+                    0%
+                </strong>
+            </div>
+
+            <div class="big-progress">
+                <div id="monthBar"></div>
+            </div>
+
+        </div>
+
+        <div class="chart-card large-chart">
+            <canvas id="monthChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+    <section id="history" class="section">
+
+        <div class="page-title">
+
+            <span>YOUR RECORD</span>
+
+            <h1>
+                History 🕘
+            </h1>
+
+            <p>
+                Every day you've tracked is saved here.
+            </p>
+
+        </div>
+
+        <div class="history-tools">
+
+            <button onclick="exportData()">
+                ⬇ Backup Data
+            </button>
+
+            <button onclick="document.getElementById('restoreInput').click()">
+                ⬆ Restore Data
+            </button>
+
+            <input
+                type="file"
+                id="restoreInput"
+                accept=".json"
+                hidden
+                onchange="restoreData(event)"
+            >
+
+        </div>
+
+        <div id="historyList" class="history-list"></div>
+
+    </section>
+
+
+    <!-- OVERALL -->
+    <section id="overall" class="section">
+
+        <div class="page-title">
+
+            <span>ALL TIME</span>
+
+            <h1>
+                Overall Progress 🏆
+            </h1>
+
+            <p>
+                Your complete journey so far.
+            </p>
+
+        </div>
+
+
+        <div class="overall-card">
+
+            <div
+                class="overall-number"
+                id="overallPercent"
+            >
+                0%
+            </div>
+
+            <h2>
+                Overall Completion
+            </h2>
+
+            <p>
+                Keep building your consistency.
+                Your future self will thank you.
+            </p>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+
+                <div>
+                    <span>Total Goals</span>
+                    <strong id="totalGoals">0</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✓</div>
+
+                <div>
+                    <span>Total Completed</span>
+                    <strong id="totalCompleted">0</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+
+                <div>
+                    <span>Active Days</span>
+                    <strong id="activeDays">0</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+
+                <div>
+                    <span>Best Streak</span>
+                    <strong id="bestStreak">0</strong>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ADD / EDIT GOAL MODAL -->
+<div id="taskModal" class="modal">
+
+    <div class="modal-box">
+
+        <button
+            class="close-btn"
+            onclick="closeTaskModal()"
+        >
+            ×
+        </button>
+
+        <h2 id="modalTitle">
+            Add New Goal 🎯
+        </h2>
+
+        <p>
+            Create something you want to accomplish.
+        </p>
+
+        <label>
+            Goal name
+        </label>
+
+        <input
+            type="text"
+            id="taskInput"
+            placeholder="e.g. Study for 2 hours"
+            maxlength="120"
+        >
+
+        <label>
+            Category
+        </label>
+
+        <select id="categoryInput">
+
+            <option value="📚 Study">
+                📚 Study
+            </option>
+
+            <option value="🏃 Fitness">
+                🏃 Fitness
+            </option>
+
+            <option value="👟 Steps">
+                👟 Steps
+            </option>
+
+            <option value="🥗 Health">
+                🥗 Health
+            </option>
+
+            <option value="🧠 Learning">
+                🧠 Learning
+            </option>
+
+            <option value="⭐ Other">
+                ⭐ Other
+            </option>
+
+        </select>
+
+
+        <label class="important-label">
+
+            <input
+                type="checkbox"
+                id="importantInput"
+            >
+
+            ⭐ Important Goal
+
+        </label>
+
+
+        <button
+            class="save-task-btn"
+            onclick="saveTask()"
+        >
+            Save Goal
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- AI MODAL -->
+<div id="aiModal" class="modal">
+
+    <div class="modal-box ai-modal">
+
+        <button
+            class="close-btn"
+            onclick="closeAIModal()"
+        >
+            ×
+        </button>
+
+        <div class="ai-symbol">
+            ✨
+        </div>
+
+        <h2>
+            Connect AI
+        </h2>
+
+        <p>
+            Your dashboard is ready for an AI assistant.
+        </p>
+
+        <div class="ai-example">
+
+            <strong>
+                You could ask:
+            </strong>
+
+            <p>
+                "How was my week?"
+            </p>
+
+            <p>
+                "What should I improve?"
+            </p>
+
+            <p>
+                "Make tomorrow's plan for me."
+            </p>
+
+        </div>
+
+        <p class="secure-text">
+            🔒 Never put an API key directly inside
+            your frontend website.
+        </p>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
